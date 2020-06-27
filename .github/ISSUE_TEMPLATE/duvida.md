@@ -7,8 +7,8 @@ assignees: ''
 
 ---
 
-** Descreva sua dúvida **
+**Descreva sua dúvida**
 Uma descrição clara e concisa do que você deseja mais informações.
 
-** Contexto adicional **
+**Contexto adicional**
 Adicione qualquer outro contexto ou captura de tela sobre a dúvida aqui.
