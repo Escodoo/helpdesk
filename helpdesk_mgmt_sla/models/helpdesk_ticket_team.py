@@ -8,7 +8,6 @@ class HelpdeskTicketTeam(models.Model):
     _inherit = "helpdesk.ticket.team"
 
     use_sla = fields.Boolean(string="Use SLA")
-    sla_ids = fields.Many2many(comodel_name="helpdesk.sla", string="SLAs")
     resource_calendar_id = fields.Many2one(
         "resource.calendar",
         "Working Hours",

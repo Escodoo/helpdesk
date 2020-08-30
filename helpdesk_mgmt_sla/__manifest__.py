@@ -12,8 +12,8 @@
     "data": [
         "data/helpdesk_sla_cron.xml",
         "security/ir.model.access.csv",
-        "views/helpdesk_sla.xml",
-        "views/helpdesk_ticket.xml",
-        "views/helpdesk_ticket_team.xml",
+        "views/helpdesk_sla_views.xml",
+        "views/helpdesk_ticket_views.xml",
+        "views/helpdesk_ticket_team_views.xml",
     ],
 }
