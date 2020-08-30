@@ -3,7 +3,7 @@
 
 from datetime import datetime
 
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class HelpdeskSla(models.Model):
@@ -11,13 +11,12 @@ class HelpdeskSla(models.Model):
     _description = "Helpdesk SLA"
 
     name = fields.Char(string="Name", required=True)
-    team_ids = fields.Many2many(comodel_name='helpdesk.ticket.team', string='Teams')
-    stage_id = fields.Many2one(
-        comodel_name="helpdesk.ticket.stage", string="Stage")
+    team_ids = fields.Many2many(comodel_name="helpdesk.ticket.team", string="Teams")
+    stage_id = fields.Many2one(comodel_name="helpdesk.ticket.stage", string="Stage")
     days = fields.Integer(string="Days", default=0, required=True)
     hours = fields.Integer(string="Hours", default=0, required=True)
     note = fields.Char(string="Note")
-    
+
     def check_sla(self):
         slas = self.search([("team_ids", "!=", False)])
         for sla in slas:
@@ -43,8 +42,7 @@ class HelpdeskSla(models.Model):
                     microsecond=create_date.microsecond,
                 )
 
-                deadline_for_working_cal = working_calendar.plan_hours(
-                    0, deadline)
+                deadline_for_working_cal = working_calendar.plan_hours(0, deadline)
 
                 if (
                     deadline_for_working_cal
