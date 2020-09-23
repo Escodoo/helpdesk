@@ -1,4 +1,4 @@
-#    Copyright (C) 2020 GARCO Consulting <www.garcoconsulting.com>
+#    Copyright (C) 2020 GARCO Consulting <www.garcoconsulting.es>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 {
     "name": "Helpdesk Ticket SLA",
@@ -16,4 +16,5 @@
         "views/helpdesk_ticket_views.xml",
         "views/helpdesk_ticket_team_views.xml",
     ],
+    "demo": ["demo/helpdesk_mgmt_sla_demo.xml"],
 }
