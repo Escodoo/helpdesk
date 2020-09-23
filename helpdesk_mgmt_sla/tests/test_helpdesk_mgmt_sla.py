@@ -1,4 +1,4 @@
-#    Copyright (C) 2020 GARCO Consulting <www.garcoconsulting.es>
+# Copyright (C) 2020 GARCO Consulting <www.garcoconsulting.es>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 import datetime
@@ -20,7 +20,7 @@ class TestHelpdeskMgmtSla(test_helpdesk_ticket.TestHelpdeskTicket):
         cls.sla_id = cls.env["helpdesk.sla"].create(
             {
                 "name": "Generic SLA",
-                "team_ids": cls.team_id.id,
+                "team_ids": [(6, 0, [cls.team_id.id])],
                 "stage_id": cls.stage_id.id,
                 "hours": 2,
             }
@@ -31,7 +31,7 @@ class TestHelpdeskMgmtSla(test_helpdesk_ticket.TestHelpdeskTicket):
             {
                 "name": "Test Ticket 1",
                 "description": "Test ticket description",
-                "team_id": self.team_id.id,
+                "team_id": [(6, 0, [self.team_id.id])],
                 "create_datetime": datetime.datetime.now()
                 - datetime.timedelta(hours=3),
             }
