@@ -19,7 +19,7 @@ class TestHelpdeskMgmtSla(test_helpdesk_ticket.TestHelpdeskTicket):
         cls.team_id = cls.env["helpdesk.ticket.team"].create(
             {
                 "name": "Team SLA",
-                "allow_SLA": True,
+                "use_sla": True,
             }
         )
         cls.stage_id = cls.env["helpdesk.ticket.stage"].create(
