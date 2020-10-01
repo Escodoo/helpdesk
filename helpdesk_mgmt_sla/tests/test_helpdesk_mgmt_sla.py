@@ -24,17 +24,14 @@ class TestHelpdeskMgmtSla(test_helpdesk_ticket.TestHelpdeskTicket):
                 "hours": 2,
             }
         )
-
-    def generate_ticket(self):
-        return self.env["helpdesk.ticket"].create(
+        cls.ticket = cls.env["helpdesk.ticket"].create(
             {
                 "name": "Test Ticket 1",
-                "description": "Test ticket description",
-                "team_id": [(6, 0, self.team_id.id)],
+                "description": "Ticket test",
+                "team_id": [(6, 0, cls.team_id.id)],
             }
         )
 
     def test_helpdesk_mgmt_sla(self):
-        ticket = self.generate_ticket()
-        ticket._compute_team_sla()
-        self.assertEqual(ticket.sla_expired, False)
+        self.ticket._compute_team_sla()
+        self.assertEqual(self.ticket.sla_expired, False)
