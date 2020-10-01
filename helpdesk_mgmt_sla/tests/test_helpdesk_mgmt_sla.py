@@ -28,7 +28,7 @@ class TestHelpdeskMgmtSla(test_helpdesk_ticket.TestHelpdeskTicket):
             {
                 "name": "Test Ticket 1",
                 "description": "Ticket test",
-                "team_id": [(6, 0, cls.team_id.id)],
+                "team_id": cls.team_id.id,
             }
         )
 
