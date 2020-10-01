@@ -16,7 +16,8 @@ class TestHelpdeskMgmtSla(test_helpdesk_ticket.TestHelpdeskTicket):
         cls.team_id = cls.env["helpdesk.ticket.team"].create(
             {"name": "Team SLA", "use_sla": True}
         )
-        cls.stage_id = cls.env["helpdesk.ticket.stage"].create({"name": "Reach stage"})
+        cls.stage_id = cls.env["helpdesk.ticket.stage"].create(
+            {"name": "Reach stage"})
         cls.sla_id = cls.env["helpdesk.sla"].create(
             {
                 "name": "Generic SLA",
@@ -32,7 +33,7 @@ class TestHelpdeskMgmtSla(test_helpdesk_ticket.TestHelpdeskTicket):
                 "name": "Test Ticket 1",
                 "description": "Test ticket description",
                 "team_id": [(6, 0, [self.team_id.id])],
-                "create_datetime": datetime.datetime.now()
+                "create_date": datetime.datetime.now()
                 - datetime.timedelta(hours=3),
             }
         )
