@@ -1,7 +1,6 @@
 # Copyright (C) 2020 GARCO Consulting <www.garcoconsulting.es>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-import datetime
 import logging
 
 from odoo.addons.helpdesk_mgmt.tests import test_helpdesk_ticket
@@ -32,7 +31,6 @@ class TestHelpdeskMgmtSla(test_helpdesk_ticket.TestHelpdeskTicket):
                 "name": "Test Ticket 1",
                 "description": "Test ticket description",
                 "team_id": [(6, 0, [self.team_id.id])],
-                "create_date": datetime.datetime.now() - datetime.timedelta(hours=3),
             }
         )
 
