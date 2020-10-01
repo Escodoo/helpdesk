@@ -30,11 +30,11 @@ class TestHelpdeskMgmtSla(test_helpdesk_ticket.TestHelpdeskTicket):
             {
                 "name": "Test Ticket 1",
                 "description": "Test ticket description",
-                "team_id": [(6, 0, [self.team_id.id])],
+                "team_id": [(6, 0, self.team_id.id)],
             }
         )
 
     def test_helpdesk_mgmt_sla(self):
         ticket = self.generate_ticket()
         ticket._compute_team_sla()
-        self.assertEqual(ticket.sla_expired, True)
+        self.assertEqual(ticket.sla_expired, False)
