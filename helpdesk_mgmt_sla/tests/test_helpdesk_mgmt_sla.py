@@ -35,3 +35,7 @@ class TestHelpdeskMgmtSla(test_helpdesk_ticket.TestHelpdeskTicket):
     def test_helpdesk_mgmt_sla(self):
         self.ticket._compute_team_sla()
         self.assertEqual(self.ticket.sla_expired, False)
+
+    def test_helpdesk_sla(self):
+        self.env["helpdesk.sla"].check_sla()
+        self.assertEqual(self.ticket.sla_expired, False)
