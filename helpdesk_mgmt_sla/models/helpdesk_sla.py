@@ -22,6 +22,8 @@ class HelpdeskSla(models.Model):
         ('2', _('High')),
         ('3', _('Very High')),
     ], string='Minimum Priority', default='1')
+    category_ids = fields.Many2many(comodel_name="helpdesk.ticket.category", string="Categories")
+    tag_ids = fields.Many2many(comodel_name="helpdesk.ticket.tag", string="Tags")
 
     def check_sla(self):
         slas = self.search([("team_ids", "!=", False)])

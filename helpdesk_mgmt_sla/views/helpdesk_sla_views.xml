@@ -20,6 +20,8 @@
                                 widget="many2many_tags"
                             />
                             <field name="priority" widget="priority"/>
+                            <field name="category_ids" widget="many2many_tags"/>
+                            <field name="tag_ids" widget="many2many_tags"/>
                             <separator colspan="2" string="Target" class="mt32" />
                             <field name="stage_id" string="Reach Stage" />
                             <label for="time_days" string="Reach In" />
