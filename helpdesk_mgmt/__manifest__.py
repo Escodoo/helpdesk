@@ -17,6 +17,7 @@
     'depends': [
         'mail',
         'portal',
+        'rating'
     ],
     'data': [
         'data/helpdesk_data.xml',

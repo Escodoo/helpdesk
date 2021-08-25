@@ -34,6 +34,7 @@
                         <group name="main_left">
                             <field name="sequence"/>
                             <field name="mail_template_id"/>
+                            <field name="rating_template_id" groups="helpdesk_mgmt.group_helpdesk_manager"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                         <group name="main_right">

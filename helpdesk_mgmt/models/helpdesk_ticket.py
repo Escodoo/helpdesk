@@ -1,5 +1,6 @@
 from odoo import _, api, fields, models, tools
 from email.utils import getaddresses
+from datetime import timedelta
 
 
 class HelpdeskTicket(models.Model):
@@ -8,7 +9,7 @@ class HelpdeskTicket(models.Model):
     _description = 'Helpdesk Ticket'
     _rec_name = 'number'
     _order = 'priority desc, sequence, number desc'
-    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'rating.mixin']
 
     def _get_default_stage_id(self):
         return self.env['helpdesk.ticket.stage'].search([], limit=1).id
@@ -81,6 +82,32 @@ class HelpdeskTicket(models.Model):
     sequence = fields.Integer(
         string='Sequence', index=True, default=10,
         help="Gives the sequence order when displaying a list of tickets.")
+
+    # rating fields
+    percentage_satisfaction_ticket = fields.Integer(
+        compute="_compute_percentage_satisfaction_ticket", string="Happy % on Ticket", store=True, default=-1)
+    rating_request_deadline = fields.Datetime(compute='_compute_rating_request_deadline', store=True)
+    rating_status = fields.Selection([('stage', 'Rating when changing stage'), ('periodic', 'Periodical Rating'), ('no','No rating')], 'Customer(s) Ratings', help="How to get the customer's feedbacks?\n"
+                    "- Rating when changing stage: Email will be sent when a ticket is pulled in another stage\n"
+                    "- Periodical Rating: Email will be sent periodically\n\n"
+                    "Don't forget to set up the mail templates on the stages for which you want to get the customer's feedbacks.", default="no", required=True)
+    rating_status_period = fields.Selection([
+        ('daily', 'Daily'), ('weekly', 'Weekly'), ('bimonthly', 'Twice a Month'),
+        ('monthly', 'Once a Month'), ('quarterly', 'Quarterly'), ('yearly', 'Yearly')
+    ], 'Rating Frequency')
+    portal_show_rating = fields.Boolean('Rating visible publicly', copy=False, oldname='website_published')
+
+    @api.depends('rating_ids.rating', 'rating_ids.parent_res_id')
+    def _compute_percentage_satisfaction_ticket(self):
+        res = self.env['helpdesk.ticket']._compute_parent_rating_percentage_satisfaction(self)
+        for ticket in self:
+            ticket.percentage_satisfaction_ticket = res[ticket.id]
+
+    @api.depends('rating_status', 'rating_status_period')
+    def _compute_rating_request_deadline(self):
+        periods = {'daily': 1, 'weekly': 7, 'bimonthly': 15, 'monthly': 30, 'quarterly': 90, 'yearly': 365}
+        for ticket in self:
+            ticket.rating_request_deadline = fields.datetime.now() + timedelta(days=periods.get(ticket.rating_status_period, 0))
 
     def send_user_mail(self):
         self.env.ref('helpdesk_mgmt.assignment_email_template'). \
@@ -208,6 +235,11 @@ class HelpdeskTicket(models.Model):
             if vals.get('user_id'):
                 ticket.send_user_mail()
                 ticket.message_subscribe(partner_ids=ticket.user_id.partner_id.ids)
+                # rating on stage
+            if 'stage_id' in vals and vals.get('stage_id'):
+                ticket.filtered(
+                    lambda x: x.rating_status == 'stage'
+                )._send_ticket_rating_mail(force_send=True)
         return res
 
     def _prepare_ticket_number(self, values):
@@ -226,8 +258,11 @@ class HelpdeskTicket(models.Model):
         test_task = self[0]
         changes, tracking_value = tracking[test_task.id]
         if "stage_id" in changes and test_task.stage_id.mail_template_id:
-            res['stage_id'] = (test_task.stage_id.mail_template_id,
-                               {"composition_mode": "mass_mail"})
+            # res['stage_id'] = (test_task.stage_id.mail_template_id,
+            #                    {"composition_mode": "mass_mail"})
+            # res['stage_id'] = (test_task.stage_id.rating_template_id,
+            #                    {"composition_mode": "mass_mail"})
+            print('teste')
 
         return res
 
@@ -297,3 +332,33 @@ class HelpdeskTicket(models.Model):
                     reason=reason
                 )
         return recipients
+
+    # ---------------------------------------------------
+    # Rating business
+    # ---------------------------------------------------
+    def _send_ticket_rating_mail(self, force_send=False):
+        for ticket in self:
+            rating_template = ticket.stage_id.rating_template_id
+            if rating_template:
+                ticket.rating_send_request(
+                    rating_template,
+                    lang=ticket.partner_id.lang,
+                    force_send=force_send
+                )
+
+    def rating_get_partner_id(self):
+        res = super(HelpdeskTicket, self).rating_get_partner_id()
+        if not res and self.partner_id:
+            return self.partner_id
+        return res
+
+    @api.multi
+    def rating_apply(self, rate, token=None, feedback=None, subtype=None):
+        return super(
+            HelpdeskTicket, self
+        ).rating_apply(
+            rate,
+            token=token,
+            feedback=feedback,
+            subtype="ticket.mt_task_rating"
+        )

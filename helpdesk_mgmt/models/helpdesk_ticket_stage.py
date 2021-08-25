@@ -31,3 +31,8 @@ class HelpdeskTicketStage(models.Model):
         default=lambda self: self.env['res.company']._company_default_get(
             'helpdesk.ticket')
     )
+    rating_template_id = fields.Many2one(
+        'mail.template',
+        string='Rating Email Template',
+        domain=[('model', '=', 'helpdesk.ticket')],
+        help="If set and if the project's rating configuration is 'Rating when changing stage', then an email will be sent to the customer when the task reaches this step.")
