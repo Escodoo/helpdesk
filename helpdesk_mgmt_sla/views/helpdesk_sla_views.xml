@@ -19,6 +19,7 @@
                                 domain="[('use_sla', '=', True)]"
                                 widget="many2many_tags"
                             />
+                            <field name="priority" widget="priority"/>
                             <separator colspan="2" string="Target" class="mt32" />
                             <field name="stage_id" string="Reach Stage" />
                             <label for="time_days" string="Reach In" />

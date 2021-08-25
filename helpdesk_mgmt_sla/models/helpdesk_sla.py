@@ -3,7 +3,7 @@
 
 from datetime import datetime
 
-from odoo import fields, models
+from odoo import _, fields, models
 
 
 class HelpdeskSla(models.Model):
@@ -16,6 +16,12 @@ class HelpdeskSla(models.Model):
     days = fields.Integer(string="Days", default=0, required=True)
     hours = fields.Integer(string="Hours", default=0, required=True)
     note = fields.Char(string="Note")
+    priority = fields.Selection(selection=[
+        ('0', _('Low')),
+        ('1', _('Medium')),
+        ('2', _('High')),
+        ('3', _('Very High')),
+    ], string='Minimum Priority', default='1')
 
     def check_sla(self):
         slas = self.search([("team_ids", "!=", False)])
