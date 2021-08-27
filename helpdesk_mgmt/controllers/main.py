@@ -13,18 +13,18 @@ class HelpdeskTicketController(http.Controller):
         """Close the support ticket"""
         values = {}
         for field_name, field_value in kw.items():
-            if field_name.endswith('_id'):
+            if field_name.endswith("_id"):
                 values[field_name] = int(field_value)
             else:
                 values[field_name] = field_value
-        ticket = http.request.env['helpdesk.ticket'].sudo().search([
-            ('id', '=', values['ticket_id']),
-        ])
-        if ticket.stage_id.portal_user_can_close:
-            ticket.stage_id = values.get('stage_id')
-            return werkzeug.utils.redirect("/my/ticket/" + str(ticket.id))
-        else:
-            return werkzeug.utils.redirect("/my/tickets")
+        ticket = (
+            http.request.env["helpdesk.ticket"]
+            .sudo()
+            .search([("id", "=", values["ticket_id"])])
+        )
+        ticket.stage_id = values.get("stage_id")
+
+        return werkzeug.utils.redirect("/my/ticket/" + str(ticket.id))
 
     @http.route('/new/ticket', type="http", auth="user", website=True)
     def create_new_ticket(self, **kw):
