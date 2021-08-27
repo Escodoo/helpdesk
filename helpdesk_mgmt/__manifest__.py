@@ -33,10 +33,15 @@
         'views/helpdesk_ticket_view.xml',
         'views/helpdesk_dashboard_view.xml',
         'views/report_helpdesk_ticket.xml',
+        'views/assets.xml',
     ],
     'demo': [
         'demo/helpdesk_demo.xml',
     ],
+    'qweb': [
+        "static/src/xml/dashboard.xml",
+    ],
+
     'development_status': 'Beta',
     'application': True,
     'installable': True,
