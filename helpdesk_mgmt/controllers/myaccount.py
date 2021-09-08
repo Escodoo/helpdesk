@@ -1,9 +1,12 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html).
 
+from operator import itemgetter
+
 from odoo import http, _
 from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal
 from odoo.addons.portal.controllers.portal import pager as portal_pager
+from odoo.tools import groupby as groupbyelem
 from odoo.exceptions import AccessError
 
 from odoo.osv.expression import OR
@@ -52,6 +55,7 @@ class CustomerPortal(CustomerPortal):
             sortby=None,
             filterby=None,
             search=None,
+            groupby='none',
             search_in='all',
             **kw):
         values = self._prepare_portal_layout_values()
@@ -60,6 +64,7 @@ class CustomerPortal(CustomerPortal):
 
         searchbar_sortings = {
             'date': {'label': _('Newest'), 'order': 'create_date desc'},
+            'number': {'label': _('Reference'), 'order': 'number desc'},
             'name': {'label': _('Name'), 'order': 'name'},
             'stage': {'label': _('Stage'), 'order': 'stage_id'},
             'update': {'label': _('Last Stage Update'),
@@ -68,6 +73,8 @@ class CustomerPortal(CustomerPortal):
 
         # search input (text)
         searchbar_inputs = {
+            'number': {'input': 'Reference',
+                       'label': _('Search in Reference')},
             'name': {'input': 'name',
                      'label': _('Search in Names')},
             'description': {'input': 'description',
@@ -109,13 +116,18 @@ class CustomerPortal(CustomerPortal):
             domain += search_domain
         searchbar_inputs.update(searchbar_meta_inputs)
 
-        # search filters (by stage)
-        searchbar_filters = {'all': {'label': _('All'), 'domain': []}}
-        for stage in request.env['helpdesk.ticket.stage'].search([]):
-            searchbar_filters.update({
-                str(stage.id): {'label': stage.name,
-                                'domain': [('stage_id', '=', stage.id)]}
-            })
+        # search filters
+        searchbar_filters = {
+            'all': {'label': _('All'), 'domain': []},
+            'open': {'label': _('Open'), 'domain': [('closed_date', '=', False)]},
+            'closed': {'label': _('Closed'), 'domain': [('closed_date', '!=', False)]},
+        }
+
+        # search group by
+        searchbar_groupby = {
+            'none': {'input': 'none', 'label': _('None')},
+            'stage': {'input': 'stage_id', 'label': _('Stage')},
+        }
 
         # default sort by order
         if not sortby:
@@ -144,16 +156,27 @@ class CustomerPortal(CustomerPortal):
             limit=self._items_per_page,
             offset=pager['offset']
         )
+        if groupby == 'stage':
+            grouped_tickets = [
+                request.env['helpdesk.ticket'].concat(*g) for k, g in groupbyelem(
+                    tickets, itemgetter('stage_id')
+                )
+            ]
+        else:
+            grouped_tickets = [tickets]
         values.update({
             'date': date_begin,
             'tickets': tickets,
+            'grouped_tickets': grouped_tickets,
             'page_name': 'ticket',
             'pager': pager,
             'default_url': '/my/tickets',
             'searchbar_sortings': searchbar_sortings,
             'searchbar_inputs': searchbar_inputs,
+            'searchbar_groupby': searchbar_groupby,
             'search_in': search_in,
             'sortby': sortby,
+            'groupby': groupby,
             'searchbar_filters': searchbar_filters,
             'filterby': filterby,
         })
